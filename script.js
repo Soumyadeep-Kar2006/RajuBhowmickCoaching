@@ -141,6 +141,23 @@ document.addEventListener('DOMContentLoaded', () => {
   scrollReveals.forEach(el => revealObserver.observe(el));
 
   // ============================================
+  // ACHIEVEMENT TABS (Toppers / Events)
+  // ============================================
+  const achievementTabs = document.querySelectorAll('.achievement-tab');
+  const achievementViews = document.querySelectorAll('.achievement-view');
+
+  achievementTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const view = tab.getAttribute('data-view');
+      achievementTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      achievementViews.forEach(v => v.classList.remove('active'));
+      const target = document.getElementById('view' + view.charAt(0).toUpperCase() + view.slice(1));
+      if (target) target.classList.add('active');
+    });
+  });
+
+  // ============================================
   // COUNTER ANIMATION
   // ============================================
   const counters = document.querySelectorAll('.counter');
@@ -203,8 +220,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ============================================
-  // ACHIEVEMENT SLIDER
-  // ============================================
   const slider = document.getElementById('achievementSlider');
   const slides = slider ? slider.querySelectorAll('.achievement-slide') : [];
   const tabs = document.querySelectorAll('.achievement-tab');
@@ -266,51 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ============================================
-  // TESTIMONIAL SLIDER
-  // ============================================
-  const testimonialSlider = document.getElementById('testimonialSlider');
-  const testimonialCards = testimonialSlider ? testimonialSlider.querySelectorAll('.testimonial-card') : [];
-  const dotsContainer = document.getElementById('testimonialDots');
-  let currentTestimonial = 0;
 
-  if (testimonialSlider && testimonialCards.length > 0) {
-    // Create dots
-    testimonialCards.forEach((_, i) => {
-      const dot = document.createElement('button');
-      dot.classList.add('testimonial-dot');
-      if (i === 0) dot.classList.add('active');
-      dot.setAttribute('aria-label', `Go to testimonial ${i + 1}`);
-      dot.addEventListener('click', () => goToTestimonial(i));
-      dotsContainer.appendChild(dot);
-    });
-
-    const dots = dotsContainer.querySelectorAll('.testimonial-dot');
-
-    function goToTestimonial(index) {
-      currentTestimonial = index;
-      testimonialSlider.style.transform = `translateX(-${currentTestimonial * 100}%)`;
-      dots.forEach(d => d.classList.remove('active'));
-      dots[currentTestimonial].classList.add('active');
-    }
-
-    // Auto slide
-    let testimonialInterval = setInterval(() => {
-      currentTestimonial = (currentTestimonial + 1) % testimonialCards.length;
-      goToTestimonial(currentTestimonial);
-    }, 5000);
-
-    const testimonialContainer = document.querySelector('.testimonial-slider-container');
-    if (testimonialContainer) {
-      testimonialContainer.addEventListener('mouseenter', () => clearInterval(testimonialInterval));
-      testimonialContainer.addEventListener('mouseleave', () => {
-        testimonialInterval = setInterval(() => {
-          currentTestimonial = (currentTestimonial + 1) % testimonialCards.length;
-          goToTestimonial(currentTestimonial);
-        }, 5000);
-      });
-    }
-  }
 
   // ============================================
   // GALLERY LIGHTBOX
@@ -333,13 +304,15 @@ document.addEventListener('DOMContentLoaded', () => {
     function openLightbox(index) {
       currentImage = index;
       const item = galleryItems[currentImage];
-      const placeholder = item.querySelector('.gallery-placeholder');
+      const img = item.querySelector('.gallery-img');
       const overlayText = item.querySelector('.gallery-overlay span');
-      const clone = placeholder.cloneNode(true);
-      clone.classList.add('large');
 
       lightboxContent.innerHTML = '';
-      lightboxContent.appendChild(clone);
+      const imgClone = document.createElement('img');
+      imgClone.src = img.src;
+      imgClone.alt = img.alt;
+      imgClone.style.cssText = 'width:100%;height:auto;max-height:80vh;object-fit:contain;border-radius:12px;display:block;';
+      lightboxContent.appendChild(imgClone);
       if (overlayText) {
         const textEl = document.createElement('div');
         textEl.style.cssText = 'text-align:center;color:#D4AF37;margin-top:16px;font-size:1.2rem;font-weight:600;';
